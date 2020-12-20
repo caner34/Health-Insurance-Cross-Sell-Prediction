@@ -76,13 +76,16 @@ def get_data_with_dummies(data):
     return data
 
 
-def execute_preprocessing(data):
+def execute_preprocessing(data, get_dummies=True):
     
     data = data.drop(columns=['id'])
     data = convert_data_into_numeric_types(data)
     data = shrink_data_logarithmically(data, 'Annual_Premium')
     data = normalize_numeric_data(data)
-    data = get_data_with_dummies(data)
+    if get_dummies:
+        data = get_data_with_dummies(data)
+    else:
+        data = data.astype(float)
     
     return data
 
