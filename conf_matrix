@@ -1,0 +1,9 @@
+from sklearn.metrics import plot_confusion_matrix
+from mlxtend.plotting import plot_decision_regions
+matrix = plot_confusion_matrix(model, X_test, y_test,
+                                 cmap=plt.cm.Blues,
+                                 normalize='true')
+plt.title('Confusion matrix for our classifier')
+plt.show(matrix)
+plt.show()
+

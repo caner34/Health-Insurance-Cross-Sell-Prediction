@@ -121,6 +121,7 @@ def plot_data_frame(df, title):
 
 
 plot_correlation_matrix(data)
+stats_response_distribution.plot.pie(y='Response', title='Target Value Distribution')
 stats_gender_distribution.plot.pie(y='Gender', title='Gender')
 donut_plot(stats_Vehicle_Damage_distribution, 'Vechile_Damage')
 plot_data_frame(stats_descriptive, 'Descriptive Statistics')

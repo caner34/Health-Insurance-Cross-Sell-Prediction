@@ -17,6 +17,13 @@ data = pd.read_csv(os.path.join('data', 'train.csv'))
 ##############################
 ##############################
 
+"""
+
+Plot The Distribution of Target Values
+
+"""
+
+data.Response.value_counts()
 
 data.columns
 data.dtypes

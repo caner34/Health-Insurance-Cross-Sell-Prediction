@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 # from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import accuracy_score, precision_score, recall_score, fbeta_score
-
+import upsampling
 
 
 def sequential_forward_selection(data, beatified, excommunicated, target, n_iters, clf):
@@ -24,16 +24,21 @@ def sequential_forward_selection(data, beatified, excommunicated, target, n_iter
         
         for i in range(n_iters):
             X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=2/3, stratify=y, shuffle=True)
+            
+            X_train, y_train = upsampling.up_sample_minority_class(X_train, y_train, 'y')
 
             #naive = GaussianNB()
             clf.fit(X_train, y_train)
             predictions = clf.predict(X_test)
-            cr_performances[i] = accuracy_score(y_test, predictions)
+            cr_performances[i] = fbeta_score(y_test, predictions, beta=0.5)
             
     
         accuricies[c_index] = cr_performances.mean()
 
     beatified.append(on_as_sirat[accuricies.argmax()])
+    
+    print("len(beatified): ", len(beatified))
+    print("beatified: ", beatified)
     
     return beatified
 
@@ -60,10 +65,12 @@ def sequential_backward_selection(data, beatified, excommunicated, target, n_ite
         for i in range(n_iters):
             X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=2/3, stratify=y, shuffle=True)
 
+            X_train, y_train = upsampling.up_sample_minority_class(X_train, y_train, 'y')
+
             # naive = GaussianNB()
             clf.fit(X_train, y_train)
             predictions = clf.predict(X_test)
-            cr_performances[i] = accuracy_score(y_test, predictions)
+            cr_performances[i] = fbeta_score(y_test, predictions, beta=0.5)
             
     
         accuricies[c_index] = cr_performances.mean()
@@ -72,17 +79,23 @@ def sequential_backward_selection(data, beatified, excommunicated, target, n_ite
     
     return excommunicated
 
-def BiDirectionalSelection(data, target, n_iters, clf, n_features=0, sequence=['f', 'b']):
+def BiDirectionalSelection(data, target, n_iters, clf, n_features=0, sequence=['f', 'b'], data_scale=0.05):
     
     print("BiDirectionalSelection started n_columns: ", len(data.columns.tolist()))
+    
+    data = data.iloc[:int(data.shape[0] * data_scale),:]
+    
+    print(data[target].value_counts())
     
     sequence = sequence * int((len(data.columns.tolist()) + 1) / len(sequence))
     
     beatified = []
     excommunicated = []
     
-    for step in sequence:
+    for i_cr_step, step in enumerate(sequence):
         
+        if i_cr_step % 100 == 0:
+            print(i_cr_step)
         
         endymion = [c for c in data.columns.tolist() if c not in beatified + excommunicated + [target]]
         if len(endymion) == 0:
